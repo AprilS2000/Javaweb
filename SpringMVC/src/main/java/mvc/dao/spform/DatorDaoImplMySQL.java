@@ -31,7 +31,7 @@ import mvc.bean.spform.SexData;
 import mvc.bean.spform.User;
 
 @Repository
-public class UserDaoImplMySQL implements UserDao {
+public class DatorDaoImplMySQL implements UserDao {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
