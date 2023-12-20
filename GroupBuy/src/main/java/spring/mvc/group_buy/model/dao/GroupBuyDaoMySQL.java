@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,8 @@ import spring.mvc.group_buy.model.entity.User;
 
 @Repository
 public class GroupBuyDaoMySQL implements GroupBuyDao {
-
+	
+	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
 	@Override
@@ -28,7 +30,6 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 	public void addUser(User user) {
 		String sql = "insert into user(username, password, level) values(?, ?, ?)";
 		jdbcTemplate.update(sql, user.getUsername(), user.getPassword(), user.getLevel());
-		
 	}
 
 	@Override
@@ -62,8 +63,8 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 
 	@Override
 	public List<Product> findAllProducts() {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "select productId, productName, price, unit, isLaunch from product";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Product.class));
 	}
 
 	@Override
