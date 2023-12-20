@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -69,33 +70,43 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 
 	@Override
 	public Optional<Product> findProductById(Integer productId) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		String sql = "select productId, productName, price, unit, isLaunch from product where productId = ?";
+		try {
+			Product product = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Product.class), productId);
+			return Optional.ofNullable(product);
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
 	public void addProduct(Product product) {
-		// TODO Auto-generated method stub
-		
+		String sql = "insert into product(productName, price, unit, isLaunch) values(?, ?, ?, ?)";
+		jdbcTemplate.update(sql, product.getProductName(), product.getPrice(), product.getUnit(), product.getIsLaunch());
 	}
 
+//	4. 變更商品上架狀態
 	@Override
 	public Boolean updateProductLaunch(Integer productId, Boolean isLaunch) {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "update product set isLaunch = ? where productId = ?";
+		return jdbcTemplate.update(sql, isLaunch, productId) > 0;
 	}
 
+//	購物車/購物車項目(Cart/CartItem)
+	//	1. 新增購物車資料
 	@Override
 	public void addCart(Cart cart) {
-		// TODO Auto-generated method stub
-		
+		String sql = "insert into cart(userId, isCheckOut) values(?, ?)";
+		jdbcTemplate.update(sql, cart.getUserId(), cart.getIsCheckout());
 	}
 
+//	2. 新增購物車項目資料
 	@Override
 	public void addCartItem(CartItem cartItem) {
-		// TODO Auto-generated method stub
-		
+		String sql = "insert into cartItem(cartId, productId, quantity) values(?, ?, ?)";
+		jdbcTemplate.update(sql, cartItem.getCartId(), cartItem.getProductId(), cartItem.getQuantity());
 	}
+
 
 	@Override
 	public List<Cart> findAllCart() {
@@ -129,8 +140,18 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 
 	@Override
 	public Optional<Cart> findNoneCheckoutCartByUserId(Integer userId) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		try {
+			String sql = "select cartId, userId, isCheckout, checkoutTime from cart "
+					+ "where userId = ? and (isCheckout = false or isCheckout is null)";
+			Cart cart = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Cart.class), userId);
+			if(cart != null) {
+				enrichCartWithDetails(cart);
+			}
+			return Optional.ofNullable(cart);
+		
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -162,5 +183,23 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	// 為 cart 注入 cartItem
+	// details: 使用者物件(user) 與 購物車明細(cartItems), 以及購物車明細的商品資料
+	private void enrichCartWithDetails(Cart cart) {
+		// 注入 user
+		//findUserById(cart.getUserId()).ifPresent(user -> cart.setUser(user));
+		findUserById(cart.getUserId()).ifPresent(cart::setUser);
+		
+		// 查詢 cartItems 並注入
+		String sqlItems = "select itemId, cartId, productId, quantity from cartitem where cartId = ?";
+		List<CartItem> cartItems = jdbcTemplate.query(sqlItems, new BeanPropertyRowMapper<>(CartItem.class), cart.getCartId());
+		// 根據 productId 找到 product 並注入
+		cartItems.forEach(cartItem -> {
+			findProductById(cartItem.getProductId()).ifPresent(cartItem::setProduct);
+		});
+		cart.setCartItems(cartItems);
+}
+
 
 }
