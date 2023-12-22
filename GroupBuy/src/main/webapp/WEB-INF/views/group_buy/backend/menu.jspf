@@ -1,32 +1,25 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>團購網首頁</title>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
-	</head>
-	<body>
-		<!-- menu -->
-		<%@include file="./menu.jspf" %>
-		<div style="padding: 15px">
-			<form method="post" action="./result" class="pure-form">
-				<fieldset>
-					<legend>團購網首頁</legend>
-					商品: <select id="productId" name="productId">
-							<c:forEach items="${ products }" var="product" >
-								<option value="${ product.productId }">
-									${ product.productName }
-									( ${ product.price } 元 / ${ product.unit } )
-								</option>
-							</c:forEach>
-						 </select><p />
-					數量: <input type="number" id="quantity" name="quantity" value="5" /><p />	 
-					<button type="submit" class="pure-button pure-button-primary">新增</button>	 
-				</fieldset>
-			</form>
-		</div>
-	</body>
-</html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<div class="pure-menu pure-menu-horizontal" style="background-color:#D2E9FF">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item pure-menu-selected">
+            <a href="./main" class="pure-menu-link">團購後台首頁</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="./report" class="pure-menu-link">後臺報告</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="../frontend/main" class="pure-menu-link">團購前台首頁</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="../logout" class="pure-menu-link">🔞 登出</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="./profile" class="pure-menu-link">👼 ${ user.username }</a>
+        </li>
+    </ul>
+</div>
+<!-- 公告 -->
+<!-- 
+<marquee direction="right" height="30" scrollamount="10" behavior="alternate">跑馬1 🐴</marquee>
+ -->
+<p />

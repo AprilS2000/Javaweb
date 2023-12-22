@@ -9,11 +9,10 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
 	</head>
 	<body>
-	<span>1234</span>
 		<!-- menu -->
 		<%@include file="./menu.jspf" %>
 		<div style="padding: 15px">
-			<form method="post" action="./result" class="pure-form">
+			<form method="post" action="./addToCart" class="pure-form">
 				<fieldset>
 					<legend>團購網首頁</legend>
 					商品: <select id="productId" name="productId">
@@ -24,8 +23,10 @@
 								</option>
 							</c:forEach>
 						 </select><p />
-					數量: <input type="number" id="quantity" name="quantity" value="5" /><p />	 
-					<button type="submit" class="pure-button pure-button-primary">新增</button>	 
+					數量: <input type="number" id="quantity" name="quantity" value="5" /><p />
+					<button type="submit"
+							${ (empty products)?'disabled':'' }		 
+							class="pure-button pure-button-primary">新增</button>	 
 				</fieldset>
 			</form>
 		</div>

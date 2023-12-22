@@ -1,32 +1,71 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sp" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>團購網首頁</title>
+		<title>團購網-後臺商品維護</title>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+		<link rel="stylesheet" href="/GroupBuy/css/group_buy.css">
+		<script type="text/javascript">
+			function changeLaunch(productId, isLaunch) {
+				location.href = './update_product_launch?productId=' + productId + '&isLaunch=' + isLaunch;
+			}
+		</script>
 	</head>
 	<body>
 		<!-- menu -->
 		<%@include file="./menu.jspf" %>
+		
 		<div style="padding: 15px">
-			<form method="post" action="./result" class="pure-form">
-				<fieldset>
-					<legend>團購網首頁</legend>
-					商品: <select id="productId" name="productId">
-							<c:forEach items="${ products }" var="product" >
-								<option value="${ product.productId }">
-									${ product.productName }
-									( ${ product.price } 元 / ${ product.unit } )
-								</option>
-							</c:forEach>
-						 </select><p />
-					數量: <input type="number" id="quantity" name="quantity" value="5" /><p />	 
-					<button type="submit" class="pure-button pure-button-primary">新增</button>	 
-				</fieldset>
-			</form>
+			<table>
+				<tr>
+					<td valign="top">
+						<sp:form modelAttribute="product" method="post" action="./result" class="pure-form">
+							<fieldset>
+								<legend>團購網-商品新增</legend>
+								品名: <sp:input path="productName" name="productName" value="水果茶" /><p />
+								價格: <sp:input type="number" path="price" value="40" /><p />
+								單位: <sp:select path="unit" items="${ units }" />
+								&nbsp;&nbsp;&nbsp;&nbsp;	 
+								上架: <sp:checkbox path="isLaunch" /> 	 
+								<p />
+								<button type="submit" class="pure-button pure-button-primary">新增</button>
+							</fieldset>
+						</sp:form>
+					</td>
+					<td valign="top" style="padding-left: 15px">
+						<form class="pure-form">
+							<fieldset>
+								<legend>團購網-後臺商品維護</legend>
+								<table class="pure-table pure-table-bordered">
+									<thead>
+										<tr><th>序號</th><th>ID</th><th>品名</th><th>價格</th><th>單位</th><th>上架</th></tr>
+									</thead>
+									<tbody>
+										<c:forEach items="${ products }" var="product" varStatus="status">
+										<tr>
+											<td>${ status.count+1 }</td>
+											<td>${ product.productId }</td>
+											<td>${ product.productName }</td>
+											<td>${ product.price }</td>
+											<td>${ product.unit }</td>
+											<td><input 
+													onClick="changeLaunch(${ product.productId }, this.checked)"
+													type="checkbox" ${ (product.isLaunch) ? 'checked' : '' } 
+													value="true"> 上架</td>
+										</tr>
+										</c:forEach>
+									</tbody>
+								</table>
+								<p />
+							</fieldset>
+						</form>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</body>
 </html>

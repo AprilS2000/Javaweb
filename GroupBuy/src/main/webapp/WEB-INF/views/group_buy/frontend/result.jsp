@@ -19,7 +19,7 @@
 					數量: ${ quantity } ${ product.unit }<p />	 
 				</fieldset>
 			</form>
-		</div>
+		</div>                          
 		
 	</body>
 </html>
