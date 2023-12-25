@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import spring.mvc.group_buy.model.entity.Cart;
 import spring.mvc.group_buy.model.entity.CartItem;
 import spring.mvc.group_buy.model.entity.Product;
+import spring.mvc.group_buy.model.entity.Service;
 import spring.mvc.group_buy.model.entity.User;
 
 @Repository
@@ -49,6 +50,13 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 		String sql = "select userId, username, password, level from user where username = ?";
 		try {
 			User user = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), username);
+			// 查找使用者可以使用的服務(授權)
+			String sql2 = "select s.serviceId, s.serviceLocation, s.serviceName, s.serviceUrl "
+						+ "from level_ref_service r "
+						+ "left join service s on s.serviceId = r.serviceId "
+						+ "where r.levelId = ? order by r.sort";
+			List<Service> services = jdbcTemplate.query(sql2, new BeanPropertyRowMapper<>(Service.class), user.getLevel());
+			user.setServices(services);
 			return Optional.ofNullable(user);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -61,6 +69,13 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 		String sql = "select userId, username, password, level from user where userId = ?";
 		try {
 			User user = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), userId);
+			// 查找使用者可以使用的服務(授權)
+			String sql2 = "select s.serviceId, s.serviceLocation, s.serviceName, s.serviceUrl "
+						+ "from level_ref_service r "
+						+ "left join service s on s.serviceId = r.serviceId "
+						+ "where r.levelId = ? order by r.sort";
+			List<Service> services = jdbcTemplate.query(sql2, new BeanPropertyRowMapper<>(Service.class), user.getLevel());
+			user.setServices(services);
 			return Optional.ofNullable(user);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -229,13 +244,7 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 	// 13. 計算每個使用者所購買的總金額
 	@Override
 	public List<Map<String, Object>> calculateTotalAmountPerUser() {
-		String sql = "select u.userId, u.username, coalesce(SUM(p.price * ci.quantity), 0) as total "
-				+ "from user u "
-				+ "left join cart c on u.userId = c.userId "
-				+ "left join cartitem ci on c.cartId = ci.cartId "
-				+ "left join product p on ci.productId = p.productId "
-				+ "where c.isCheckout = true "
-				+ "group by u.userId, u.username";
+		String sql = "SELECT userId, username, total FROM group_buy.usertotalamountview;";
 		return jdbcTemplate.queryForList(sql);
 	}
 	
