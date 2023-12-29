@@ -62,18 +62,7 @@
     -->
     <Connector connectionTimeout="20000" maxParameterCount="1000" port="8080" protocol="HTTP/1.1" redirectPort="8443"/>
     
-    <Connector 
-		 SSLEnabled="true" 
-		 SSLEngine="on" 
-		 clientAuth="false" 
-		 keystoreFile="C:/keys/web_ca.pfx" 
-		 keystorePass="123456" 
-		 keystoreType="pkcs12" 
-		 maxThreads="200" 
-		 port="8443" 
-		 protocol="org.apache.coyote.http11.Http11NioProtocol" 
-		 scheme="https" 
-		 secure="true"/>
+    <Connector SSLEnabled="true" SSLEngine="on" clientAuth="false" keystoreFile="C:/keys/web_ca.pfx" keystorePass="123456" keystoreType="pkcs12" maxThreads="200" port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https" secure="true"/>
     
     <!-- A "Connector" using the shared thread pool-->
     <!--
