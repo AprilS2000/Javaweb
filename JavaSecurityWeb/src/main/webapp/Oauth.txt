@@ -1,0 +1,8 @@
+client ID 
+a5da62cf1cc71805e23c
+
+client secret
+73be536c674da6d2cccd7cf1811b53e7b455f053
+
+Authorization callback
+http://localhost:8080/JavaSecurityWeb/secure/callback/oauth2
